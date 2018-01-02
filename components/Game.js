@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {StyleSheet, Text, View} from 'react-native'
+import {StyleSheet, Text, View, Button, TextInput} from 'react-native'
 import {StackNavigator} from 'react-navigation'
 import {emojis} from '../utils/emojis.js'
 
@@ -20,7 +20,8 @@ class Game extends Component {
    this.setState({
      emojis: [...emojis],
      currentQuestion: randomQuestion,
-     score: 0
+     score: 0,
+     input: ''
    })
   }
 
@@ -35,9 +36,14 @@ class Game extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>
+        <Text style={styles.emojis}>
           {this.state.emojis.length && this.state.emojis[this.state.currentQuestion].question}
         </Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={(input) => this.setState({input})}
+          value={this.state.input}
+        />
         <Text style={styles.score}>
           Score: {this.state.score}
         </Text>
@@ -52,10 +58,24 @@ const styles = StyleSheet.create({
    flex: 1,
    alignItems: 'center',
    justifyContent: 'center',
-   backgroundColor: '#AAA'
+   backgroundColor: '#AAA',
  },
  score: {
-   color: '#F55'
+   color: '#F55',
+   fontSize: 25
+ },
+ input: {
+   backgroundColor: '#333',
+   color: '#FFF',
+   height: '7%',
+   width: '60%',
+   marginTop: '5%',
+   marginBottom: '5%',
+   textAlign: 'center',
+   fontSize: 20
+ },
+ emojis: {
+   fontSize: 40
  }
 })
 
