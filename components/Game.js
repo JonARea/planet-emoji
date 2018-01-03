@@ -8,25 +8,57 @@ class Game extends Component {
     super(props)
     this.state = {
       emojis: [],
-      currentQuestion: 0,
-      score: 0
+      currentQuestion: this.pickRandomIndex(emojis),
+      score: 0,
+      isActive: true
     }
 
     this.restartGame = this.restartGame.bind(this)
+    this.checkGuess = this.checkGuess.bind(this)
   }
 
   restartGame() {
-   let randomQuestion = this.pickRandomQuestion()
+   let randomQuestion = this.pickRandomIndex(this.state.emojis)
    this.setState({
      emojis: [...emojis],
      currentQuestion: randomQuestion,
      score: 0,
-     input: ''
+     input: '',
+     message: '',
+     isActive: true
    })
   }
 
-  pickRandomQuestion() {
-    return Math.floor(Math.random() * 11)
+  checkGuess() {
+    let userGuess = this.state.input.toLowerCase().replace(/[^a-z]/g, '')
+    let answer = this.state.emojis[this.state.currentQuestion].answer.toLowerCase().replace(/[^a-z]/g, '')
+    let {message, emojis, currentQuestion, score, isActive} = {...this.state}
+
+    if (userGuess === answer) {
+      emojis = this.state.emojis.filter((emoji, index) => index !== this.state.currentQuestion)
+      currentQuestion = this.pickRandomIndex(emojis)
+      message = 'Correct! Great job!!!'
+      score = this.state.score + 10
+    } else {
+      message = 'Sorry, Try Again!'
+    }
+
+    if (!emojis.length) {
+      isActive = false
+      message = 'YOU WIN!!!!'
+    }
+
+    this.setState({
+      emojis,
+      message,
+      currentQuestion,
+      score,
+      isActive
+    })
+  }
+
+  pickRandomIndex(array) {
+    return Math.floor(Math.random() * array.length)
   }
 
   componentDidMount() {
@@ -36,17 +68,36 @@ class Game extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.emojis}>
-          {this.state.emojis.length && this.state.emojis[this.state.currentQuestion].question}
+        <Text>
+          {this.state.message}
         </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={(input) => this.setState({input})}
-          value={this.state.input}
-        />
+        {this.state.isActive && (
+          <View>
+            <Text style={styles.emojis}>
+              {this.state.emojis.length && this.state.emojis[this.state.currentQuestion].question}
+            </Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(input) => this.setState({input})}
+              value={this.state.input}
+            />
+            <Button
+              title='Guess'
+              style={styles.button}
+              onPress={() => {
+                this.checkGuess()
+                this.setState({input: ''})
+              }}
+            />
+          </View>
+        )}
         <Text style={styles.score}>
           Score: {this.state.score}
         </Text>
+        <Button
+          title='Reset the Game'
+          onPress={() => this.restartGame()}
+        />
       </View>
     )
   }
@@ -76,6 +127,9 @@ const styles = StyleSheet.create({
  },
  emojis: {
    fontSize: 40
+ },
+ button: {
+   color: '#555',
  }
 })
 
