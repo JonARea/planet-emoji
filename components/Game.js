@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
-import {StyleSheet, Text, View, Button, TextInput} from 'react-native'
+import {StyleSheet, Text, View, Button, TextInput, Image} from 'react-native'
 import {StackNavigator} from 'react-navigation'
 import {emojis} from '../utils/emojis.js'
+import Globe from '../assets/globeVector.png'
 
 class Game extends Component {
   constructor(props) {
@@ -68,36 +69,50 @@ class Game extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>
-          {this.state.message}
-        </Text>
-        {this.state.isActive && (
-          <View>
-            <Text style={styles.emojis}>
-              {this.state.emojis.length && this.state.emojis[this.state.currentQuestion].question}
+        <Image
+          source={Globe}
+          style={styles.globe}
+        />
+        <View style={styles.container}>
+          <View style={styles.gameInfo}>
+            <Text style={styles.score}>
+              Score: {this.state.score}
             </Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={(input) => this.setState({input})}
-              value={this.state.input}
-            />
+            <Text style={{fontSize: 20}}>
+              {this.state.message}
+            </Text>
+          </View>
+          {this.state.isActive ? (
+            <View style={styles.gamePlay}>
+              <Text style={styles.emojis}>
+                {this.state.emojis.length && this.state.emojis[this.state.currentQuestion].question}
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                onChangeText={(input) => this.setState({input})}
+                value={this.state.input}
+              />
+
+              <Button
+                title='Guess'
+                color='#FFF'
+                style={styles.button}
+                onPress={() => {
+                  this.checkGuess()
+                  this.setState({input: ''})
+                }}
+              />
+            </View>
+          ) : null}
+          <View style={styles.gameManager}>
             <Button
-              title='Guess'
-              style={styles.button}
-              onPress={() => {
-                this.checkGuess()
-                this.setState({input: ''})
-              }}
+              title='Reset the Game'
+              color='#FFF'
+              onPress={() => this.restartGame()}
             />
           </View>
-        )}
-        <Text style={styles.score}>
-          Score: {this.state.score}
-        </Text>
-        <Button
-          title='Reset the Game'
-          onPress={() => this.restartGame()}
-        />
+        </View>
       </View>
     )
   }
@@ -105,26 +120,44 @@ class Game extends Component {
 
 
 const styles = StyleSheet.create({
+ globe: {
+   position: 'absolute',
+   width: '100%'
+ },
  container: {
    flex: 1,
    alignItems: 'center',
    justifyContent: 'center',
-   backgroundColor: '#AAA',
+   backgroundColor: 'rgba(0,0,0,0)',
+ },
+ gameInfo: {
+   flex: 1,
+   alignItems: 'center',
+   marginTop: 50
+ },
+ gamePlay: {
+   flex: 1.5,
+   alignItems: 'center'
+ },
+ gameManager: {
+   marginBottom: 50
  },
  score: {
    color: '#F55',
-   fontSize: 25
+   fontSize: 25,
+   marginBottom: 150
  },
  input: {
-   backgroundColor: '#333',
-   color: '#FFF',
-   height: '7%',
-   width: '60%',
-   marginTop: '5%',
-   marginBottom: '5%',
    textAlign: 'center',
-   fontSize: 20
+   fontSize: 20,
+   backgroundColor: '#333',
+   height: 40,
+   width: 250,
+   color: '#FFF',
+   marginTop: 20,
+   marginBottom: 20
  },
+
  emojis: {
    fontSize: 40
  },
